@@ -114,7 +114,7 @@ std::vector<FTGlyphInfo> FTTypeFace::LoadGlyph(const char* text, float fontSize,
         FT_Load_Glyph(ft_face_, index, FT_LOAD_NO_SCALE | FT_LOAD_NO_BITMAP);
 
     if (error) {
-      LOG_ERROR("failed to load Glyph {:x} at index {}", c, index);
+      LOG_ERROR("failed to load Glyph {:x} at index {}", std::uint32_t(c), index);
       continue;
     }
 

@@ -12,7 +12,7 @@
 
 namespace example {
 
-// #define ENABLE_VALIDATION
+#define ENABLE_VALIDATION
 
 #ifdef ENABLE_VALIDATION
 static bool g_enable_validation = true;
@@ -425,9 +425,6 @@ void VkApp::CreateVkInstance() {
     extension_names[i] = glfw_extensions[i];
   }
 
-  // skity need this extension to query device properties
-  extension_names.emplace_back("VK_KHR_get_physical_device_properties2");
-
   if (g_enable_validation) {
     extension_names.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
   }
@@ -527,14 +524,11 @@ void VkApp::PickPhysicalDevice() {
     if (graphic_it != queue_family_properties.end() &&
         compute_it != queue_family_properties.end()) {
       vk_phy_device_ = available_devices[i];
-      graphic_queue_family =
-          std::distance(graphic_it, queue_family_properties.begin());
+      graphic_queue_family = graphic_it - queue_family_properties.begin();
 
-      present_queue_family =
-          std::distance(present_it, queue_family_properties.begin());
+      present_queue_family = present_it - queue_family_properties.begin();
 
-      compute_queue_family =
-          std::distance(compute_it, queue_family_properties.begin());
+      compute_queue_family = compute_it - queue_family_properties.begin();
       break;
     }
   }
@@ -568,7 +562,7 @@ void VkApp::PickPhysicalDevice() {
                  dynamic_states.extendedDynamicState);
   }
 
-  if (graphic_queue_family == -1 || present_queue_family == -1) {
+  if (graphic_queue_family == -1) {
     spdlog::error("Can not find GPU contains Graphic support");
     exit(-1);
   }

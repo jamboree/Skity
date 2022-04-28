@@ -40,10 +40,10 @@ include(GNUInstallDirs)
 include(cmake/Platform.cmake)
 # options
 include(cmake/Options.cmake)
-# pack all shader files
-include(cmake/Shader.cmake)
 # third party deps
 include(cmake/ThirdPartyDep.cmake)
+# pack all shader files
+include(cmake/Shader.cmake)
 
 if(${ENABLE_LOG})
   set(SKITY_LOG 1)
