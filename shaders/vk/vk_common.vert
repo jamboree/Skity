@@ -8,8 +8,8 @@ layout(push_constant) uniform constants {
 GlobalInfo;
 
 // [x, y]
-layout(set = 0, location = 0) in vec2 aPos;
-layout(set = 0, location = 1) in vec3 aPosInfo;
+layout(location = 0) in vec2 aPos;
+layout(location = 1) in vec3 aPosInfo;
 
 layout(location = 0) out vec2 vPos;
 layout(location = 1) out vec3 vPosInfo;

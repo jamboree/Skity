@@ -473,6 +473,7 @@ struct PipelineBuilder {
 
     VK_CALL_I(vkDestroyShaderModule, ctx->GetDevice(), vertex, nullptr);
     VK_CALL_I(vkDestroyShaderModule, ctx->GetDevice(), fragment, nullptr);
+    VK_CALL_I(vkDestroyShaderModule, ctx->GetDevice(), geometry, nullptr);
 
     return pipeline;
   }

@@ -118,8 +118,9 @@ void RenderPipeline::Bind(VkCommandBuffer cmd) {
 void RenderPipeline::UploadPushConstant(GlobalPushConst const& push_const,
                                         VkCommandBuffer cmd) {
   VK_CALL(vkCmdPushConstants, cmd, pipeline_layout_,
-          VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT, 0,
-          sizeof(GlobalPushConst), &push_const);
+          VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT |
+              VK_SHADER_STAGE_GEOMETRY_BIT,
+          0, sizeof(GlobalPushConst), &push_const);
 }
 
 void RenderPipeline::UploadCommonSet(CommonFragmentSet const& common_set,
@@ -238,7 +239,8 @@ void RenderPipeline::InitDescriptorSetLayout(GPUVkContext* ctx) {
 
 void RenderPipeline::InitPipelineLayout(GPUVkContext* ctx) {
   VkPushConstantRange push_const_range = VKUtils::PushConstantRange(
-      VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+      VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT |
+          VK_SHADER_STAGE_GEOMETRY_BIT,
       push_const_size_, 0);
 
   VkPipelineLayoutCreateInfo create_info{

@@ -45,6 +45,8 @@ include(cmake/ThirdPartyDep.cmake)
 # pack all shader files
 include(cmake/Shader.cmake)
 
+#add_dependencies(skity shaders)
+
 if(${ENABLE_LOG})
   set(SKITY_LOG 1)
   # no exception

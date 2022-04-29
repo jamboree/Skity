@@ -1,37 +1,16 @@
-# add_shader depends on Vulkan::glslc. if not found, guide the user to find vulkan and the executable.
-function(add_shader RET OUTPUT_DIR)
-    if(NOT Vulkan_FOUND)
-        message(FATAL_ERROR
-            "The addShader() function depends on the \"glslc\" shader compiler executable.\n"
-            "It is detected during find_package(Vulkan REQUIRED) and defined as imported target executable Vulkan::glslc.\n"
-            "Please use find_package(Vulkan REQUIRED) and make sure it succeeds!\n"
-        )
-    endif()
-    foreach(SOURCE_FILE IN LISTS ARGN)
-        get_filename_component(INPUT_EXT "${SOURCE_FILE}" LAST_EXT)
-        message("add_shader: ${SOURCE_FILE}")
-	    get_filename_component(INPUT_PATH "${SOURCE_FILE}" ABSOLUTE)
-        get_filename_component(INPUT_FILENAME "${SOURCE_FILE}" NAME)
+set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/vk)
+file(GLOB SHADERS ${SHADER_DIR}/*.vert ${SHADER_DIR}/*.frag ${SHADER_DIR}/*.comp ${SHADER_DIR}/*.geom ${SHADER_DIR}/*.tesc ${SHADER_DIR}/*.tese ${SHADER_DIR}/*.mesh ${SHADER_DIR}/*.task ${SHADER_DIR}/*.rgen ${SHADER_DIR}/*.rchit ${SHADER_DIR}/*.rmiss)
 
-        set(OUTPUT_FILENAME "${INPUT_FILENAME}.spv")
-        set(OUTPUT_PATH "${OUTPUT_DIR}/${OUTPUT_FILENAME}")
+foreach(SHADER IN LISTS SHADERS)
+    get_filename_component(FILENAME ${SHADER} NAME)
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}.spv
+        COMMAND Vulkan::glslc -I ${SHADER_DIR} ${SHADER} -o ${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}.spv
+        DEPENDS ${SHADER}
+        COMMENT "Compiling ${FILENAME}")
+list(APPEND SPV_SHADERS ${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}.spv)
+endForeach()
 
-        # Create the output directory.
-        file(MAKE_DIRECTORY "${OUTPUT_DIR}")
-
-	    # Add a custom command to compile GLSL to SPIR-V.
-	    add_custom_command(
-		    OUTPUT "${OUTPUT_PATH}"
-		    COMMAND Vulkan::glslc -I "${CMAKE_CURRENT_SOURCE_DIR}" -o "${OUTPUT_PATH}" "${INPUT_PATH}"
-		    DEPENDS "${INPUT_PATH}"
-		    VERBATIM)
-
-        set(OUTPUT_PATHS "${OUTPUT_PATHS}" "${OUTPUT_PATH}")
-    endforeach()
-
-    set(${RET} "${OUTPUT_PATHS}" PARENT_SCOPE)
-endfunction()
-
+add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})
 
 # Creates C resources file from files in given directory
 function(create_resources dir output)
@@ -51,11 +30,8 @@ function(create_resources dir output)
     # Convert hex data for C compatibility
     string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," filedata ${filedata})
     # Append data to output file
-    file(APPEND ${output} "const unsigned char ${filename}[] = {${filedata}};\nconst unsigned ${filename}_size = sizeof(${filename});\n")
+    file(APPEND ${output} "alignas(4) const unsigned char ${filename}[] = {${filedata}};\nconst unsigned ${filename}_size = sizeof(${filename});\n")
   endforeach()
 endfunction()
 
-add_shader(shader_objects ${CMAKE_CURRENT_BINARY_DIR}/shadersXX
-    ${CMAKE_CURRENT_SOURCE_DIR}/shaders/vk/vk_uniform_color.frag
-)
 create_resources(${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/shader.hpp)
