@@ -76,7 +76,7 @@ bool Rect::isFinite() const {
   accum *= right_;
   accum *= bottom_;
 
-  return !FloatIsNan(accum);
+  return !std::isnan(accum);
 }
 
 float Rect::HalfWidth(Rect const& rect) {

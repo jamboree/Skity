@@ -11,18 +11,18 @@ namespace skity {
 
 void HWDraw::Draw() {
   // update transform matrix
-  if (transform_matrix_.IsValid()) {
-    renderer_->SetModelMatrix(*transform_matrix_);
+  if (fields_.contains(Field::transform_matrix)) {
+    renderer_->SetModelMatrix(transform_matrix_);
   }
 
   // stroke width
-  if (stroke_width_.IsValid()) {
-    renderer_->SetStrokeWidth(*stroke_width_);
+  if (fields_.contains(Field::stroke_width)) {
+    renderer_->SetStrokeWidth(stroke_width_);
   }
 
   // global alpha
-  if (global_alpha_.IsValid()) {
-    renderer_->SetGlobalAlpha(*global_alpha_);
+  if (fields_.contains(Field::global_alpha)) {
+    renderer_->SetGlobalAlpha(global_alpha_);
   }
 
   DoStencilIfNeed();
@@ -45,18 +45,24 @@ void HWDraw::SetColorRange(HWDrawRange const& color_range) {
   color_range_ = color_range;
 }
 
-void HWDraw::SetStrokeWidth(float width) { stroke_width_.Set(width); }
+void HWDraw::SetStrokeWidth(float width) {
+  stroke_width_ = width;
+  fields_.set(Field::stroke_width);
+}
 
 void HWDraw::SetUniformColor(glm::vec4 const& color) {
-  uniform_color_.Set(color);
+  uniform_color_ = color;
+  fields_.set(Field::uniform_color);
 }
 
 void HWDraw::SetTransformMatrix(glm::mat4 const& matrix) {
-  transform_matrix_.Set(matrix);
+  transform_matrix_ = matrix;
+  fields_.set(Field::transform_matrix);
 }
 
 void HWDraw::SetGradientBounds(glm::vec2 const& p0, glm::vec2 const& p1) {
-  gradient_bounds_.Set(glm::vec4{p0, p1});
+  gradient_bounds_ = glm::vec4{p0, p1};
+  fields_.set(Field::gradient_bounds);
 }
 
 void HWDraw::SetGradientColors(std::vector<glm::vec4> const& colors) {
@@ -75,7 +81,10 @@ void HWDraw::SetFontTexture(HWTexture* font_texture) {
   font_texture_ = font_texture;
 }
 
-void HWDraw::SetGlobalAlpha(float alpha) { global_alpha_.Set(alpha); }
+void HWDraw::SetGlobalAlpha(float alpha) {
+  global_alpha_ = alpha;
+  fields_.set(Field::global_alpha);
+}
 
 void HWDraw::DoStencilIfNeed() {
   if (stencil_front_range_.count == 0 && stencil_back_range_.count == 0) {
@@ -117,15 +126,15 @@ void HWDraw::DoColorFill() {
 
   if (pipeline_mode_ == kUniformColor) {
     renderer_->SetPipelineColorMode(HWPipelineColorMode::kUniformColor);
-    if (uniform_color_.IsValid()) {
-      renderer_->SetUniformColor(*uniform_color_);
+    if (fields_.contains(Field::uniform_color)) {
+      renderer_->SetUniformColor(uniform_color_);
     }
   } else if (pipeline_mode_ == kLinearGradient ||
              pipeline_mode_ == kRadialGradient) {
     renderer_->SetPipelineColorMode((HWPipelineColorMode)pipeline_mode_);
     renderer_->SetGradientCountInfo(gradient_colors_.size(),
                                     gradient_stops_.size());
-    renderer_->SetGradientBoundInfo(*gradient_bounds_);
+    renderer_->SetGradientBoundInfo(gradient_bounds_);
     renderer_->SetGradientColors(gradient_colors_);
     if (!gradient_stops_.empty()) {
       renderer_->SetGradientPositions(gradient_stops_);
@@ -136,7 +145,7 @@ void HWDraw::DoColorFill() {
 
     BindTexture();
 
-    renderer_->SetGradientBoundInfo(*gradient_bounds_);
+    renderer_->SetGradientBoundInfo(gradient_bounds_);
   }
 
   renderer_->DrawIndex(color_range_.start, color_range_.count);
@@ -373,9 +382,9 @@ void PostProcessDraw::DrawToCanvas() {
 }
 
 void PostProcessDraw::SaveTransform() {
-  auto const& matrix = TransformMatrix();
+  auto const* matrix = TransformMatrix();
 
-  if (!matrix.IsValid()) {
+  if (!matrix) {
     return;
   }
 

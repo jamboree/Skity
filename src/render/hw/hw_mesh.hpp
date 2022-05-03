@@ -36,15 +36,15 @@ class HWMesh {
   HWMesh() = default;
   ~HWMesh() = default;
 
-  size_t AppendVertex(float x, float y, float mix, float u = 0.f,
-                      float v = 0.f);
-  size_t AppendVertex(HWVertex const& vertex);
+  uint32_t AppendVertex(float x, float y, float mix, float u = 0.f,
+                        float v = 0.f);
+  uint32_t AppendVertex(HWVertex const& vertex);
 
-  size_t VertexBase() { return raw_vertex_buffer_.size(); }
+  uint32_t VertexBase() { return uint32_t(raw_vertex_buffer_.size()); }
 
-  size_t IndexBase() { return raw_index_buffer_.size(); }
+  uint32_t IndexBase() { return uint32_t(raw_index_buffer_.size()); }
 
-  size_t AppendIndices(std::vector<uint32_t> const& indices);
+  uint32_t AppendIndices(std::vector<uint32_t> const& indices);
 
   void UploadMesh(HWRenderer* renderer);
   void ResetMesh();

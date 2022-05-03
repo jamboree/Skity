@@ -96,19 +96,19 @@ void HWGeometryRaster::FlushRaster() {
   // stencil front
   if (!stencil_front_buffer_.empty()) {
     stencil_front_start_ = mesh_->IndexBase();
-    stencil_front_count_ = stencil_front_buffer_.size();
+    stencil_front_count_ = uint32_t(stencil_front_buffer_.size());
     mesh_->AppendIndices(stencil_front_buffer_);
   }
 
   if (!stencil_back_buffer_.empty()) {
     stencil_back_start_ = mesh_->IndexBase();
-    stencil_back_count_ = stencil_back_buffer_.size();
+    stencil_back_count_ = uint32_t(stencil_back_buffer_.size());
     mesh_->AppendIndices(stencil_back_buffer_);
   }
 
   if (!color_buffer_.empty()) {
     color_start_ = mesh_->IndexBase();
-    color_count_ = color_buffer_.size();
+    color_count_ = uint32_t(color_buffer_.size());
     mesh_->AppendIndices(color_buffer_);
   }
 }
@@ -231,7 +231,7 @@ std::vector<uint32_t>& HWGeometryRaster::CurrentIndexBuffer() {
 }
 
 void HWGeometryRaster::ExpandBounds(glm::vec2 const& p) {
-  if (FloatIsNan(p.x) || FloatIsNan(p.y)) {
+  if (std::isnan(p.x) || std::isnan(p.y)) {
     return;
   }
   if (!bounds_.IsValid()) {

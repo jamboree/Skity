@@ -69,12 +69,9 @@ static inline bool PointEqualsWithinTolerance(Point const& pt, Point const& p,
   return FloatNearlyZero(pt.x - p.x, tol) && FloatNearlyZero(pt.y - p.y, tol);
 }
 
-template <bool use_rsqrt, class POINT>
-bool PointSetLength(POINT& pt, float x, float y, float length,
+static inline bool PointSetLength(Point& pt, double x, double y, float length,
                     float* orig_length = nullptr) {
-  double xx = x;
-  double yy = y;
-  double dmag = glm::sqrt(xx * xx + yy * yy);
+  double dmag = std::hypot(x, y);
   double dscale = length / dmag;
 
   x *= dscale;
@@ -90,8 +87,8 @@ bool PointSetLength(POINT& pt, float x, float y, float length,
   if (orig_length) {
     mag = static_cast<float>(dmag);
   }
-  pt.x = x;
-  pt.y = y;
+  pt.x = float(x);
+  pt.y = float(y);
   if (orig_length) {
     *orig_length = mag;
   }
@@ -100,7 +97,7 @@ bool PointSetLength(POINT& pt, float x, float y, float length,
 }
 
 static inline bool VectorSetNormal(Vector& vec, float x, float y) {
-  return PointSetLength<false>(vec, x, y, Float1);
+  return PointSetLength(vec, x, y, Float1);
 }
 
 static inline float PointDistanceToSqd(Point const& pt, Point const& a) {

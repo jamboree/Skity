@@ -123,7 +123,7 @@ int Conic::BuildUnitArc(Vector const& start, Vector const& stop,
   if (dot < 1) {
     Vector offCurve = {lastQ.x + x, lastQ.y + y, 0, 0};
     const float cosThetaOver2 = glm::sqrt((1 + dot) / 2);
-    PointSetLength<false>(offCurve, offCurve.x, offCurve.y,
+    PointSetLength(offCurve, offCurve.x, offCurve.y,
                           FloatInvert(cosThetaOver2));
     offCurve.z = 0;
     offCurve.w = 0;

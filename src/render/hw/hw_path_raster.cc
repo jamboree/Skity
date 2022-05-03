@@ -160,7 +160,7 @@ void HWPathRaster::HandleLineJoin(glm::vec2 const& p1, glm::vec2 const& p2,
       curr_join = p1 + current_normal * stroke_radius;
     }
     // FIXME: to solve parallel direction, this is caused by circle path
-    if (FloatIsNan(curr_join.x) || FloatIsNan(curr_join.y)) {
+    if (std::isnan(curr_join.x) || std::isnan(curr_join.y)) {
       return;
     }
     HandleBevelJoinInternal(p1, prev_join, curr_join,

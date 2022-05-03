@@ -126,7 +126,7 @@ static inline int valid_unit_divide(float number, float denom, float* radio) {
   }
 
   float r = number / denom;
-  if (FloatIsNan(r)) {
+  if (std::isnan(r)) {
     return 0;
   }
 

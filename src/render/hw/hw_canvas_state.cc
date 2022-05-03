@@ -32,28 +32,20 @@ void HWCanvasState::RestoreToCount(int save_count) {
 }
 
 void HWCanvasState::Translate(float dx, float dy) {
-  Matrix current = CurrentMatrix();
-  Matrix translate = glm::translate(glm::identity<Matrix>(), {dx, dy, 0.f});
-
-  matrix_state_.back() = current * translate;
+  matrix_state_.back() = glm::translate(CurrentMatrix(), {dx, dy, 0.f});
 
   matrix_dirty_ = true;
 }
 
 void HWCanvasState::Scale(float dx, float dy) {
-  Matrix current = CurrentMatrix();
-  Matrix scale = glm::scale(glm::identity<Matrix>(), {dx, dy, 1.f});
-
-  matrix_state_.back() = current * scale;
+  matrix_state_.back() = glm::scale(CurrentMatrix(), {dx, dy, 1.f});
 
   matrix_dirty_ = true;
 }
 
 void HWCanvasState::Rotate(float degree) {
-  Matrix current = CurrentMatrix();
-  Matrix rotate = glm::rotate(glm::identity<Matrix>(), glm::radians(degree),
-                              {0.f, 0.f, 1.f});
-  matrix_state_.back() = current * rotate;
+  matrix_state_.back() =
+      glm::rotate(CurrentMatrix(), glm::radians(degree), {0.f, 0.f, 1.f});
 
   matrix_dirty_ = true;
 }

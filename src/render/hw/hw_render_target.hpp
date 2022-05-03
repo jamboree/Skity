@@ -56,11 +56,7 @@ class HWRenderTargetCache final {
     uint32_t width = {};
     uint32_t height = {};
 
-    Size() = default;
-
-    bool operator==(Size const& other) const {
-      return width == other.width && height == other.height;
-    }
+    bool operator==(Size const& other) const = default;
   };
 
   struct SizeHash {

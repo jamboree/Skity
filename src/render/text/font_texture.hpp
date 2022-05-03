@@ -19,9 +19,6 @@ class FontTexture : public TextureAtlas {
     GlyphID id;
     float font_size;
 
-    GlyphKey() = default;
-    ~GlyphKey() = default;
-
     bool operator==(GlyphKey const& other) const;
   };
 

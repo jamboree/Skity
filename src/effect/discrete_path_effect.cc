@@ -13,7 +13,7 @@ static void Perterb(Point* p, Vector const& tangent, float scale) {
   PointRotateCCW(&normal);
   normal.w = 0.f;
 
-  PointSetLength<false>(normal, normal.x, normal.y, scale);
+  PointSetLength(normal, normal.x, normal.y, scale);
 
   *p += normal;
 }

@@ -62,7 +62,10 @@ class HWDraw {
   HWRenderer* GetPipeline() { return renderer_; }
   bool HasClip() { return has_clip_; }
 
-  const Lazy<glm::mat4>& TransformMatrix() const { return transform_matrix_; }
+  const glm::mat4* TransformMatrix() const {
+    return fields_.contains(Field::transform_matrix) ? &transform_matrix_
+                                                     : nullptr;
+  }
 
  private:
   void DoStencilIfNeed();
@@ -78,6 +81,14 @@ class HWDraw {
   void BindTexture();
 
  private:
+  enum class Field {
+    stroke_width,
+    uniform_color,
+    transform_matrix,
+    gradient_bounds,
+    global_alpha,
+    NUM
+  };
   HWRenderer* renderer_;
   bool has_clip_;
   bool clip_stencil_;
@@ -88,11 +99,12 @@ class HWDraw {
   HWDrawRange stencil_back_range_ = {};
   HWDrawRange color_range_ = {};
   bool even_odd_fill_ = false;
-  Lazy<float> stroke_width_ = {};
-  Lazy<glm::vec4> uniform_color_ = {};
-  Lazy<glm::mat4> transform_matrix_ = {};
-  Lazy<glm::vec4> gradient_bounds_ = {};
-  Lazy<float> global_alpha_ = {};
+  float stroke_width_;
+  glm::vec4 uniform_color_;
+  glm::mat4 transform_matrix_;
+  glm::vec4 gradient_bounds_;
+  float global_alpha_;
+  EnumSet<Field> fields_ = {};
   std::vector<glm::vec4> gradient_colors_ = {};
   std::vector<float> gradient_stops_ = {};
   HWTexture* texture_ = {};

@@ -83,6 +83,29 @@ class Lazy {
   T* ptr_ = nullptr;
 };
 
+template <class E>
+struct EnumSet {
+  static_assert(unsigned(E::NUM) <= 32u);
+
+  EnumSet() = default;
+
+  constexpr EnumSet(E e) : bits(1u << unsigned(e)) {}
+
+  constexpr EnumSet(std::initializer_list<E> enums) {
+    for (const E e : enums) {
+      bits |= 1u << unsigned(e);
+    }
+  }
+
+  constexpr explicit operator bool() const { return bits != 0; }
+
+  constexpr bool contains(E e) const { return bits & (1u << unsigned(e)); }
+
+  constexpr void set(E e) { bits |= 1u << unsigned(e); }
+
+  unsigned bits = 0;
+};
+
 }  // namespace skity
 
 #endif  // SKITY_UTILS_LAZY_HPP

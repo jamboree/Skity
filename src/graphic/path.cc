@@ -366,8 +366,8 @@ bool Path::Iter::isClosedContour() const {
 
 Path::Verb Path::Iter::autoClose(Point* pts) {
   if (last_pt_ != move_to_) {
-    if (FloatIsNan(last_pt_.x) || FloatIsNan(last_pt_.y) ||
-        FloatIsNan(move_to_.x) || FloatIsNan(move_to_.y)) {
+    if (std::isnan(last_pt_.x) || std::isnan(last_pt_.y) ||
+        std::isnan(move_to_.x) || std::isnan(move_to_.y)) {
       return Verb::kClose;
     }
 
@@ -571,7 +571,7 @@ Path& Path::arcTo(float x1, float y1, float x2, float y2, float radius) {
   float dist = glm::abs(static_cast<float>(radius * (1 - cosh) / sinh));
   float xx = x1 - dist * before.x;
   float yy = y1 - dist * before.y;
-  PointSetLength<false>(after, after.x, after.y, dist);
+  PointSetLength(after, after.x, after.y, dist);
 
   lineTo(xx, yy);
   float weight = glm::sqrt(static_cast<float>(FloatHalf + cosh * 0.5));

@@ -51,11 +51,11 @@ static bool conic_too_curvy(Point const& firstPt, Point const& midTPt,
 
 static bool cubic_too_curvy(const Point pts[4], float to_lerance) {
   return cheap_dist_exceeds_limit(
-             pts[1], FloatInterp(pts[0].x, pts[3].x, Float1 / 3),
-             FloatInterp(pts[0].y, pts[3].y, Float1 / 3), to_lerance) ||
+             pts[1], std::lerp(pts[0].x, pts[3].x, Float1 / 3),
+             std::lerp(pts[0].y, pts[3].y, Float1 / 3), to_lerance) ||
          cheap_dist_exceeds_limit(
-             pts[2], FloatInterp(pts[0].x, pts[3].x, Float1 * 2 / 3),
-             FloatInterp(pts[0].y, pts[3].y, Float1 * 2 / 3), to_lerance);
+             pts[2], std::lerp(pts[0].x, pts[3].x, Float1 * 2 / 3),
+             std::lerp(pts[0].y, pts[3].y, Float1 * 2 / 3), to_lerance);
 }
 
 constexpr static inline float tValue2Float(int t) {
@@ -69,8 +69,8 @@ static void compute_pos_tan(const Point pts[], unsigned segType, float t,
   switch (segType) {
     case ContourMeasure::kLine_SegType:
       if (pos) {
-        PointSet(pos[0], FloatInterp(pts[0].x, pts[1].x, t),
-                 FloatInterp(pts[0].y, pts[1].y, t));
+        PointSet(pos[0], std::lerp(pts[0].x, pts[1].x, t),
+                 std::lerp(pts[0].y, pts[1].y, t));
       }
       if (tangent) {
         *tangent = Vector{glm::normalize(Vec2{pts[1] - pts[0]}), 0.f, 0.f};
@@ -127,8 +127,8 @@ static void contour_measure_seg_to(const Point pts[], unsigned segType,
       if (Float1 == stopT) {
         dst->lineTo(pts[1]);
       } else {
-        dst->lineTo(FloatInterp(pts[0].x, pts[1].x, stopT),
-                    FloatInterp(pts[0].y, pts[1].y, stopT));
+        dst->lineTo(std::lerp(pts[0].x, pts[1].x, stopT),
+                    std::lerp(pts[0].y, pts[1].y, stopT));
       }
       break;
     case ContourMeasure::kQuad_SegType:
@@ -541,7 +541,7 @@ ContourMeasure::ContourMeasure(std::vector<Segment>&& segs,
 
 bool ContourMeasure::getPosTan(float distance, Point* position,
                                Vector* tangent) const {
-  if (FloatIsNan(distance)) {
+  if (std::isnan(distance)) {
     return false;
   }
 
@@ -557,7 +557,7 @@ bool ContourMeasure::getPosTan(float distance, Point* position,
   float t;
 
   const Segment* seg = this->distanceToSegment(distance, &t);
-  if (FloatIsNan(t)) {
+  if (std::isnan(t)) {
     return false;
   }
 

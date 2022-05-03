@@ -8,29 +8,28 @@
 
 namespace skity {
 
-#define Float1 1.0f
-#define FloatHalf 0.5f
-#define FloatNaN std::numeric_limits<float>::quiet_NaN()
-#define FloatInfinity std::numeric_limits<float>::infinity()
-#define NearlyZero (Float1 / (1 << 12))
-#define FloatRoot2Over2 0.707106781f
-#define FloatSqrt2 1.41421356f
+constexpr float Float1 = 1.0f;
+constexpr float FloatHalf = 0.5f;
+constexpr float FloatNaN = std::numeric_limits<float>::quiet_NaN();
+constexpr float FloatInfinity = std::numeric_limits<float>::infinity();
+constexpr float NearlyZero = (Float1 / (1 << 12));
+constexpr float FloatRoot2Over2 = 0.707106781f;
+constexpr float FloatSqrt2 = 1.41421356f;
 
-#define FixedToFloat(x) ((x)*1.52587890625e-5f)
+template <class T>
+inline float FixedToFloat(T x) {
+  return x * 1.52587890625e-5f;
+}
 
 static inline bool FloatNearlyZero(float x, float tolerance = NearlyZero) {
   return glm::abs(x) <= tolerance;
 }
 
-static inline float FloatInterp(float A, float B, float t) {
-  return A + (B - A) * t;
-}
-
 static void P3DInterp(const float src[7], float dst[7], float t) {
-  float ab = FloatInterp(src[0], src[3], t);
-  float bc = FloatInterp(src[3], src[6], t);
+  float ab = std::lerp(src[0], src[3], t);
+  float bc = std::lerp(src[3], src[6], t);
   dst[0] = ab;
-  dst[3] = FloatInterp(ab, bc, t);
+  dst[3] = std::lerp(ab, bc, t);
   dst[6] = bc;
 }
 
@@ -38,14 +37,14 @@ static inline float SkityFloatHalf(float v) { return v * FloatHalf; }
 
 static inline float CubeRoot(float x) { return glm::pow(x, 0.3333333f); }
 
-static inline bool FloatIsNan(float x) { return x != x; }
-
 [[clang::no_sanitize("float-divide-by-zero")]] static inline float
 SkityIEEEFloatDivided(float number, float denom) {
   return number / denom;
 }
 
-#define FloatInvert(x) SkityIEEEFloatDivided(Float1, (x))
+static inline float FloatInvert(float x) {
+  return SkityIEEEFloatDivided(Float1, (x));
+}
 
 static inline bool FloatIsFinite(float x) { return !glm::isinf(x); }
 
@@ -96,7 +95,7 @@ Orientation CalculateOrientation(T const& p, T const& q, T const& r) {
 }
 
 template <class T>
-int32_t CrossProductResult(T const& p, T const& q, T const& r) {
+auto CrossProductResult(T const& p, T const& q, T const& r) {
   return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 }
 
