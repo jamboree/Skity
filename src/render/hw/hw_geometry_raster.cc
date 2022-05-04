@@ -318,13 +318,9 @@ void HWGeometryRaster::SwitchStencilToColor() {
   }
 
   if (!stencil_back_buffer_.empty()) {
-    color_buffer_ = stencil_back_buffer_;
-    stencil_back_buffer_.clear();
-  }
-
-  if (!stencil_front_buffer_.empty()) {
-    color_buffer_ = stencil_front_buffer_;
-    stencil_front_buffer_.clear();
+    color_buffer_ = std::move(stencil_back_buffer_);
+  } else if (!stencil_front_buffer_.empty()) {
+    color_buffer_ = std::move(stencil_front_buffer_);
   }
 }
 
